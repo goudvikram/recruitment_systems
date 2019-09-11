@@ -1,0 +1,86 @@
+<template #questionsPreviewTemplate>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Add Question</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="previewQuestionsModalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Selected Questions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let question of (selectAll ? questions : selectedQuestions)|async">
+        <td>{{question.question}}</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="modal-footer">
+    <div class="pull-right"></div>
+  </div>
+</template>
+
+<template #questionFormTemplate>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Add Question</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="questionFormModalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <form [formGroup]="questionForm" novalidate (ngSubmit)="onQuestionFormSubmit()">
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="" class="control-label col-sm-2">Category</label>
+        <select class="form-control" formControlName="categoryId">
+          <option  *ngFor="let category of categories | async" value="{{category.id}}">{{category.name}}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="" class="control-label col-sm-2">Question</label>
+        <textarea cols="30" rows="10" class="form-control" formControlName="question"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <div class="pull-right">
+        <button class="btn btn-default" type="button" (click)="questionFormModalRef.hide()">Cancel</button>
+        <button type="submit" class="btn btn-primary" [disabled]=!questionForm.valid>Save</button>
+      </div>
+    </div>
+  </form>
+</template>
+
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">
+    <div class="pull-left">Questions</div>
+    <div class="pull-right">
+      <button [disabled]="(selectAll ? false : this.selectedQuestionsSource.value.length ? false : true)" class="btn btn-default" type="button" (click)="onPreview()">Preview</button>
+      <button class="btn btn-primary" (click)="onAddNewQuestion()">Add New Question</button>
+    </div>
+    <div class="clearfix"></div>
+  </div>
+
+  <!-- Table -->
+  <table class="table">
+    <colgroup>
+      <col width="1">
+    </colgroup>
+    <thead>
+      <tr>
+        <th><input type="checkbox" (change)="onChangeSelectAll($event)" [checked]="selectAll"></th>
+        <th>Question</th>
+        <th>Category</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let question of questions | async">
+        <td><input [checked]="selectAll || this.selectedQuestionsSource.value.indexOf(question.id) !== -1" type="checkbox" (change)="onChangeSelectedQuestion($event, question)"></td>
+        <td>{{question.question}}</td>
+        <td>{{question.category.name}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
